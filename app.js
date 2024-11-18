@@ -1,42 +1,75 @@
-document.getElementById('login-btn').addEventListener('click', function() {
-    const companyId = document.getElementById('company-id').value;
-    const plateNumber = document.getElementById('plate-number').value;
+// Show Register Screen
+document.getElementById('to-register').addEventListener('click', function() {
+    document.getElementById('login-screen').classList.add('hidden');
+    document.getElementById('register-screen').classList.remove('hidden');
+});
 
-    // Simple validation to check if the fields are not empty
-    if (companyId && plateNumber) {
-        // Hide login screen and show parking screen
-        document.getElementById('login-screen').classList.add('hidden');
-        document.getElementById('parking-screen').classList.remove('hidden');
+// Show Login Screen
+document.getElementById('to-login').addEventListener('click', function() {
+    document.getElementById('register-screen').classList.add('hidden');
+    document.getElementById('login-screen').classList.remove('hidden');
+});
+
+// Registration Logic
+document.getElementById('register-btn').addEventListener('click', function() {
+    const email = document.getElementById('register-email').value;
+    const password = document.getElementById('register-password').value;
+    const role = document.getElementById('register-role').value;
+
+    if (email && password) {
+        const userData = {
+            email: email,
+            password: password,
+            role: role
+        };
+
+        // Store the user data in localStorage (you can store multiple users, but for now, we store just one)
+        localStorage.setItem('userData', JSON.stringify(userData));
+
+        alert('Registration Successful!');
+        document.getElementById('register-screen').classList.add('hidden');
+        document.getElementById('login-screen').classList.remove('hidden');
     } else {
-        alert('Please enter both Company ID and Plate Number.');
+        alert('Please fill in all fields.');
     }
 });
 
-// Parking spot click event
+// Login Logic
+document.getElementById('login-btn').addEventListener('click', function() {
+    const email = document.getElementById('login-email').value;
+    const password = document.getElementById('login-password').value;
+    const role = document.getElementById('login-role').value;
+
+    // Get the user data from localStorage
+    const userData = JSON.parse(localStorage.getItem('userData'));
+
+    if (userData && email === userData.email && password === userData.password && role === userData.role) {
+        alert('Login Successful!');
+        document.getElementById('login-screen').classList.add('hidden');
+        document.getElementById('parking-screen').classList.remove('hidden');
+    } else {
+        alert('Invalid credentials or role.');
+    }
+});
+
+// Logout Logic
+document.getElementById('logout-btn').addEventListener('click', function() {
+    document.getElementById('parking-screen').classList.add('hidden');
+    document.getElementById('login-screen').classList.remove('hidden');
+});
+
+// Parking Spot Logic
 document.querySelectorAll('.parking-spot').forEach(spot => {
     spot.addEventListener('click', function() {
-        // If already parked, unpark it
         if (spot.classList.contains('parked')) {
             const confirmUnpark = confirm(`Do you want to unpark from spot ${spot.textContent}?`);
             if (confirmUnpark) {
-                spot.classList.remove('parked');  // Change back to green
+                spot.classList.remove('parked');
             }
         } else {
-            // If not parked, prompt to park
             const confirmPark = confirm(`Do you want to park in spot ${spot.textContent}?`);
-
             if (confirmPark) {
-                // Park in the spot and change color to red
                 spot.classList.add('parked');
-
-                // Start a timer
-                let timeRemaining = 10; // Timer in seconds
-                const timerInterval = setInterval(function() {
-                    timeRemaining--;
-                    if (timeRemaining <= 0) {
-                        clearInterval(timerInterval);
-                    }
-                }, 1000);
             }
         }
     });
